@@ -7,7 +7,7 @@ const PORT = 8000;
 
 //middleware
 app.use(express.urlencoded({ extended: false }));
-
+app.use(express.json());
 //Get
 app.get("/users", (req, res) => {
   const html = `
@@ -29,12 +29,28 @@ app
   })
   .delete((req, res) => {
     return res.json({ message: `column ${id} deleted successfully` });
+  })
+  .put((req, res) => {
+    const Upbody = req.body;
+    console.log(Upbody);
+    console.log(req.body);
+    const id = Number(req.params.id);
+    const user = users.map((obj) => {
+      if (obj.id === id) {
+        return Upbody;
+      } else {
+        return obj;
+      }
+    });
+    fs.writeFile("./MOCK_DATA.json", JSON.stringify(user), (err, data) => {
+      return res.json({ user });
+    });
   });
-
 app.post("/api/users", (req, res) => {
   const body = req.body;
+  console.log(body);
   users.push({ ...body, id: users.length + 1 });
-  fs.writeFile("./MOCK_DATA.json", users, (err, data) => {
+  fs.writeFile("./MOCK_DATA.json", JSON.stringify(users), (err, data) => {
     return res.json({ status: "Success", id: users.length });
   });
 });
