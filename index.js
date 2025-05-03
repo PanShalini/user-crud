@@ -1,4 +1,5 @@
 const express = require("express");
+const pool = require("./db");
 const fs = require("fs");
 const users = require("./MOCK_DATA.json");
 
@@ -10,9 +11,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 //Get
 app.get("/users", (req, res) => {
-  const html = `
-    <ul> ${users.map((users) => `<li> ${users.email}</li>`).join(" ")}</ul>`;
-  res.send(html);
+  const result = pool.query("Select * from Customers");
+  res.json(result.rows);
 });
 
 //Routes
@@ -32,8 +32,6 @@ app
   })
   .put((req, res) => {
     const Upbody = req.body;
-    console.log(Upbody);
-    console.log(req.body);
     const id = Number(req.params.id);
     const user = users.map((obj) => {
       if (obj.id === id) {
@@ -48,7 +46,6 @@ app
   });
 app.post("/api/users", (req, res) => {
   const body = req.body;
-  console.log(body);
   users.push({ ...body, id: users.length + 1 });
   fs.writeFile("./MOCK_DATA.json", JSON.stringify(users), (err, data) => {
     return res.json({ status: "Success", id: users.length });
