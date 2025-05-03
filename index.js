@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 //Get
 app.get("/users", (req, res) => {
-  const result = pool.query("Select * from Customers");
+  const result = pool.query("Select * from public.Customers");
   res.json(result.rows);
 });
 
